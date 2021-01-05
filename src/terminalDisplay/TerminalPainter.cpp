@@ -326,12 +326,55 @@ namespace Konsole
         return dirtyRegion;
     }
 
+    QColor alphaBlend(const QColor &foreground, const QColor &background) {
+        const auto foregroundAlpha = foreground.alphaF();
+        const auto inverseForegroundAlpha = 1.0 - foregroundAlpha;
+        const auto backgroundAlpha = background.alphaF();
+
+        if (foregroundAlpha == 0.0) {
+            return background;
+        }
+
+        if (backgroundAlpha == 1.0) {
+            return QColor::fromRgb(
+                (foregroundAlpha*foreground.red()) + (inverseForegroundAlpha*background.red()),
+                (foregroundAlpha*foreground.green()) + (inverseForegroundAlpha*background.green()),
+                (foregroundAlpha*foreground.blue()) + (inverseForegroundAlpha*background.blue()),
+                0xff
+            );
+        } else {
+            const auto inverseBackgroundAlpha = (backgroundAlpha * inverseForegroundAlpha);
+            const auto finalAlpha = foregroundAlpha + inverseBackgroundAlpha;
+            Q_ASSERT(finalAlpha != 0.0);
+
+            return QColor::fromRgb(
+                (foregroundAlpha*foreground.red()) + (inverseBackgroundAlpha*background.red()),
+                (foregroundAlpha*foreground.green()) + (inverseBackgroundAlpha*background.green()),
+                (foregroundAlpha*foreground.blue()) + (inverseBackgroundAlpha*background.blue()),
+                finalAlpha
+            );
+        }
+    }
+
+    QColor calculateBackgroundColor(const Character* style, const QColor *colorTable)
+    {
+        auto c1 = style->backgroundColor.color(colorTable);
+        if (!(style->rendition & RE_SELECTED)) {
+            return c1;
+        }
+
+        c1.setAlphaF(0.8);
+        auto c2 = colorTable[DEFAULT_FORE_COLOR];
+
+        return alphaBlend(c1, c2);
+    }
+
     void TerminalPainter::drawTextFragment(QPainter &painter, const QRect &rect, const QString &text,
                                 const Character *style, const QColor *colorTable)
     {
         // setup painter
         const QColor foregroundColor = style->foregroundColor.color(colorTable);
-        const QColor backgroundColor = style->backgroundColor.color(colorTable);
+        const QColor backgroundColor = calculateBackgroundColor(style, colorTable);
 
         if (backgroundColor != colorTable[DEFAULT_BACK_COLOR]) {
             drawBackground(painter, rect, backgroundColor, false);
