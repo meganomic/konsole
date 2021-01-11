@@ -1118,6 +1118,12 @@ void ViewManager::setTabWidthToText(bool setTabWidthToText)
     _viewContainer->tabBar()->update();
 }
 
+void ViewManager::adjustActiveContainerSize(int size)
+{
+    _viewContainer->activeViewSplitter()->adjustActiveTerminalDisplaySize(size);
+}
+
+
 void ViewManager::setNavigationVisibility(NavigationVisibility navigationVisibility) {
     if (_navigationVisibility != navigationVisibility) {
         _navigationVisibility = navigationVisibility;
