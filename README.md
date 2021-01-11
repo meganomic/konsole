@@ -1,3 +1,10 @@
+## Changes
+
+Added adjustActiveContainerSize(int) to the dbus.
+
+
+
+
 # Konsole - KDE's Terminal Emulator
 
 Konsole is a terminal program for KDE.
