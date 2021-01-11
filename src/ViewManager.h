@@ -315,6 +315,9 @@ public Q_SLOTS:
     /** DBus slot that sets ALL tabs' width to match their text */
     Q_SCRIPTABLE void setTabWidthToText(bool);
 
+    /** DBus slot that adjusts the size of the active view */
+    Q_SCRIPTABLE void adjustActiveContainerSize(int);
+
 private Q_SLOTS:
     // called when the "Split View Left/Right" menu item is selected
     void splitLeftRight();
